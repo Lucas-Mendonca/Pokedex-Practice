@@ -1,18 +1,42 @@
-import { useContext, useEffect } from "react"
-import PokemonContext from "../contexts/PokemonContext"
-import PokeAPIv2Data from "../services/api/PokeApi"
+import { PokemonCard } from "../components/PokemonCard/PokemonCard"
+import SearchBar from "../components/SearchBar"
+import { useEffect, useState } from "react"
+import PokeAPIv2 from "../services/api"
 
 const PokemonPage = ({ children }) => {
-    const { PokemonCount } = useContext(PokemonContext)
+    const [querry, setQuerry] = useState('não alterado')
+    const updateQuerry = (value) => {
+        if(typeof value === 'string') {
+            setQuerry(value)
+        }
+        return
+    }
+
+    // Temp api fetch
+
+    const [pokeList, setPokeList] = useState([])
 
     useEffect(() => {
-        PokeAPIv2Data()
+        PokeAPIv2.get('/pokemon/')
+         .then((re) => {
+            PokeAPIv2.get(`/pokemon/?limit=${re.data.count}`)
+            .then((re) => {setPokeList(re.data.results)
+                console.log(re)
+            })
+         })
     },[])
+    //----------------
 
     return(
             <div>
-                <h1>{PokemonCount}</h1>
+                <SearchBar getQuerry={updateQuerry}/>
+                <h1>{querry}</h1>
                 {children}
+                <PokemonCard filter={querry}/>
+                <hr/>
+                {pokeList.map((pokemon) => (
+                <li id={`Poke:${pokemon.name}`} >{JSON.stringify(pokemon)}</li>
+                ))}
             </div>
     )
 }

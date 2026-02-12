@@ -1,11 +1,6 @@
 import axios from "axios";
 
-
-const PokeAPIv2Data = () => {
-    axios
-     .get('https://pokeapi.co/api/v2/pokemon/')
-     .then((response) => console.log(response))
-    
-}
-
-export default PokeAPIv2Data
+export const PokeAPIv2 = axios.create({
+    baseURL: 'https://pokeapi.co/api/v2',
+    timeout: 1500,
+})
